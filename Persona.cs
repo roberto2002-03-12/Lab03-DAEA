@@ -46,14 +46,14 @@ namespace Lab03
 
         private void btnBuscar_Click(object sender, EventArgs e)
         {
-            String nombre = txtNombre.Text;
+            //trim sin parametros sirve para quitar espacios en blanco
+            String nombre = txtNombre.Text.Trim();
             if (nombre.Length == 0)
             {
                 MessageBox.Show("No has colocado nada oe");
-            }
-
-            if (conn.State == ConnectionState.Open)
+            } else if (conn.State == ConnectionState.Open && nombre.Length > 0)
             {
+                /*
                 String sql = "SELECT * FROM usuarios WHERE usuario_nombre = '" + nombre + "'";
                 SqlCommand cmd = new SqlCommand(sql, conn);
                 SqlDataReader reader = cmd.ExecuteReader();
@@ -61,6 +61,43 @@ namespace Lab03
                 DataTable dt = new DataTable();
                 dt.Load(reader);
                 dgvListado.DataSource = dt;
+                dgvListado.Refresh();
+                */
+                List<PersonModel> personModel = new List<PersonModel>();
+
+                SqlParameter parameter = new SqlParameter();
+                parameter.ParameterName = "@LastName";
+                parameter.SqlDbType = SqlDbType.VarChar;
+                parameter.Value = nombre;
+
+                SqlCommand cmd = new SqlCommand("selectWorkersByName", conn);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add(parameter);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                
+                /*
+                DataTable dt = new DataTable();
+                dt.Load(reader);
+
+                dgvListado.DataSource = dt;
+                dgvListado.Refresh();
+                */
+
+                while (reader.Read())
+                {
+                    //crear modelos e insertar
+                    PersonModel person = new PersonModel 
+                    {
+                        PersonID = reader["PersonID"] != DBNull.Value ? (int)reader["PersonID"] : 0,
+                        FirstName = reader["FirstName"] != DBNull.Value ? (string)reader["FirstName"] : string.Empty,
+                        LastName = reader["LastName"] != DBNull.Value ? (string)reader["LastName"] : string.Empty,
+                    };
+
+                    personModel.Add(person);
+                }
+
+                dgvListado.DataSource = personModel;
                 dgvListado.Refresh();
             } else
             {

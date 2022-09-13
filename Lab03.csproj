@@ -58,6 +58,7 @@
     <Compile Include="Persona.Designer.cs">
       <DependentUpon>Persona.cs</DependentUpon>
     </Compile>
+    <Compile Include="PersonModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
